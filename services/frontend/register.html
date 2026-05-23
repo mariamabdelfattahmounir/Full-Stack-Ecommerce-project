@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - ShopHub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <i class="fas fa-user-plus"></i>
+        <h1>Create Account</h1>
+        <p>Join ShopHub and start shopping today</p>
+      </div>
+
+      <form id="register-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label for="name" class="form-label">Full Name</label>
+          <input 
+            type="text" 
+            id="name" 
+            class="form-control" 
+            placeholder="Enter your full name"
+            required
+          >
+          <span id="name-error" class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            class="form-control" 
+            placeholder="Enter your email"
+            required
+          >
+          <span id="email-error" class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            class="form-control" 
+            placeholder="Create a password (min 6 characters)"
+            required
+          >
+          <span id="password-error" class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm-password" class="form-label">Confirm Password</label>
+          <input 
+            type="password" 
+            id="confirm-password" 
+            class="form-control" 
+            placeholder="Confirm your password"
+            required
+          >
+          <span id="confirm-password-error" class="error-message"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+          <i class="fas fa-user-plus"></i> Create Account
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Already have an account? <a href="login.html">Sign in</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Check if already logged in
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeData();
+      if (isLoggedIn()) {
+        window.location.href = 'index.html';
+      }
+    });
+
+    function handleRegister(event) {
+      event.preventDefault();
+      clearAllFieldErrors();
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+
+      // Validation
+      let isValid = true;
+
+      if (!name || name.length < 2) {
+        showFieldError('name', 'Please enter your full name');
+        isValid = false;
+      }
+
+      if (!validateEmail(email)) {
+        showFieldError('email', 'Please enter a valid email address');
+        isValid = false;
+      }
+
+      if (!validatePassword(password)) {
+        showFieldError('password', 'Password must be at least 6 characters');
+        isValid = false;
+      }
+
+      if (password !== confirmPassword) {
+        showFieldError('confirm-password', 'Passwords do not match');
+        isValid = false;
+      }
+
+      if (!isValid) return;
+
+      simulateLoading(() => {
+        const result = register(name, email, password);
+
+        if (result.success) {
+          showToast('Account created successfully! Redirecting...', 'success');
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1000);
+        } else {
+          showToast(result.message, 'error');
+          if (result.message.includes('Email')) {
+            showFieldError('email', result.message);
+          }
+        }
+      });
+    }
+
+    // Clear errors on input
+    document.getElementById('name').addEventListener('input', () => clearFieldError('name'));
+    document.getElementById('email').addEventListener('input', () => clearFieldError('email'));
+    document.getElementById('password').addEventListener('input', () => clearFieldError('password'));
+    document.getElementById('confirm-password').addEventListener('input', () => clearFieldError('confirm-password'));
+  </script>
+</body>
+</html>

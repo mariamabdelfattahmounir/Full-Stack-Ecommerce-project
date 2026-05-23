@@ -1,0 +1,13 @@
+sqlalchemy
+fastapi
+prometheus_client
+redis
+pydantic
+starlette
+python-jose[cryptography]
+passlib[bcrypt]
+python-json-logger
+slowapi
+prometheus-client
+python-json-logger
+pydantic-settings
